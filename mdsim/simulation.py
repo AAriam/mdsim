@@ -174,9 +174,9 @@ class MDSimulation:
         self._init_velocities = init_vals["velocities"]
         self._init_unit_length = duq.Unit(init_vals["unit_length"])
         self._init_unit_time = duq.Unit(init_vals["unit_time"])
-        self._atomic_numbers = init_vals["atomic_nums"]
-        self._molecule_ids = init_vals["mol_ids"]
-        self._connectivity_matrix = init_vals["bonded_atoms_idx"]
+        self._atomic_numbers = init_vals["atomic_numbers"]
+        self._molecule_ids = init_vals["molecule_ids"]
+        self._connectivity_matrix = init_vals["connectivity_matrix"]
 
         # # Check the input and raise ValueError/TypeError if any discrepancies are found.
         # check_input_data(q, mol_ids, atomic_nums, bonded_atoms_idx)
