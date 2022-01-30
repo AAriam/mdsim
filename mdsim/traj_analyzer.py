@@ -42,9 +42,9 @@ class TrajectoryAnalyzer:
         positions,
         velocities,
         timestamps,
-        atomic_nums,
-        mol_ids,
-        bonded_atoms_idx,
+        atomic_numbers,
+        molecule_ids,
+        connectivity_matrix,
         masses,
         energy_potential_coulomb,
         energy_potential_lennard_jones,
@@ -63,14 +63,15 @@ class TrajectoryAnalyzer:
         positions
         velocities
         timestamps
-        atomic_nums : numpy.ndarray
+        atomic_numbers : numpy.ndarray
             1D array of length `n` (n = number of atoms) containing the atomic numbers (int) of
             all atoms in the same order as they apper in each frame of position and velocity data.
-        mol_ids : numpy.ndarray
+        molecule_ids : numpy.ndarray
             1D array of length `n` (n = number of atoms) containing the molecule-IDs of all atoms.
             They can have arbitrary values, but should have the same value for all atoms in the same molecule.
-        bonded_atoms_idx : list
-            2D list of length `n` (n = number of atoms) containing the indices (int) of all bonded atoms to each atom.
+        connectivity_matrix : numpy.ndarray
+            Connectivity of each atom to other atoms, as a boolean upper-triangular matrix of shape
+            (n, n), where 'n' is the total number of atoms.
         masses
         energy_potential_coulomb
         energy_potential_lennard_jones
@@ -86,9 +87,9 @@ class TrajectoryAnalyzer:
         self.positions = positions
         self.velocities = velocities
         self.timestamps = timestamps
-        self.atomic_numbers = atomic_nums
-        self.molecule_ids = mol_ids
-        self.bonded_atoms_idx = bonded_atoms_idx
+        self.atomic_numbers = atomic_numbers
+        self.molecule_ids = molecule_ids
+        self.connectivity_matrix = connectivity_matrix
         self.masses = masses
         self.energy_potential_coulomb = energy_potential_coulomb
         self.energy_potential_lennard_jones = energy_potential_lennard_jones
@@ -399,13 +400,12 @@ class TrajectoryAnalyzer:
         max_len = max(x_max - x_min, y_max - y_min)
 
         # plot bonds as lines
-        for idx_atom, idx_bonded_atoms in enumerate(self.bonded_atoms_idx):
-            idx_bonded_atoms = np.array(idx_bonded_atoms)
-            mask = idx_bonded_atoms > idx_atom
-            for idx_bonded_atom in idx_bonded_atoms[mask]:
+        for idx_atom, connectivity_mask in enumerate(self.connectivity_matrix):
+            pos_curr_atom = frame[idx_atom]
+            for pos_connected_atom in frame[connectivity_mask]:
                 ax.plot(
-                    [frame[idx_atom][0], frame[idx_bonded_atom][0]],
-                    [frame[idx_atom][1], frame[idx_bonded_atom][1]],
+                    [pos_curr_atom[0], pos_connected_atom[0]],
+                    [pos_curr_atom[1], pos_connected_atom[1]],
                     lw=150 / max_len,
                     color="black",
                 )
@@ -465,7 +465,7 @@ class TrajectoryAnalyzer:
     def _select_distances_bonded_atoms(self):
         atom_idx = 0
         lis = []
-        for bonded_atoms_indices in self.bonded_atoms_idx[::3]:
+        for bonded_atoms_indices in self.connectivity_matrix[::3]:
             for bonded_atom_idx in bonded_atoms_indices:
                 lis.append((atom_idx, bonded_atom_idx))
             atom_idx += 3
