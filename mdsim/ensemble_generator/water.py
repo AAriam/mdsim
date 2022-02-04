@@ -86,7 +86,7 @@ class Water(EnsembleGenerator):
             different sets of initial values.
         """
         # Instantiate the superclass
-        super().__init__(unit_length, unit_time, random_seed)
+        super().__init__(temperature, pressure, unit_length, unit_time, random_seed)
         # Verify that given number of molecules are all integers greater than 1
         helpers.raise_num_for_value_and_type(num_molecules_in_x, "num_molecules_in_x")
         helpers.raise_num_for_value_and_type(num_molecules_in_y, "num_molecules_in_y")
@@ -113,8 +113,6 @@ class Water(EnsembleGenerator):
             self._create_2d = create_2d
         # Convert given quantities to duq.Quantity objects (if they are strings)
         # and verify that they have the correct dimension
-        self._temperature = helpers.convert_to_quantity(temperature, "Θ", "temperature")
-        self._pressure = helpers.convert_to_quantity(pressure, "P", "pressure")
         self._eq_bond_length = helpers.convert_to_quantity(eq_bond_len, "L", "eq_bond_len")
         self._eq_bond_angle = helpers.convert_to_quantity(eq_bond_angle, "1", "eq_bond_angle")
         # Read masses and calculate molar mass of water

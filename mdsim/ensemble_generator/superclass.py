@@ -27,8 +27,10 @@ class EnsembleGenerator:
 
     def __init__(
         self,
-        unit_length: Union[str, duq.Unit],
-        unit_time: Union[str, duq.Unit],
+        temperature: Union[str, duq.Quantity] = "310 K",
+        pressure: Union[str, duq.Quantity] = "1 atm",
+        unit_length: Union[str, duq.Unit] = "Å",
+        unit_time: Union[str, duq.Unit] = "fs",
         random_seed: Union[int, None] = None,
     ):
         """
@@ -48,6 +50,10 @@ class EnsembleGenerator:
             , creating two ensembles with otherwise identical parameters will result in two
             different sets of initial values.
         """
+        # Convert given quantities to duq.Quantity objects (if they are strings)
+        # and verify that they have the correct dimension
+        self._temperature = helpers.convert_to_quantity(temperature, "Θ", "temperature")
+        self._pressure = helpers.convert_to_quantity(pressure, "P", "pressure")
         # Convert given units to duq.Unit (if they are strings)
         # and verify that they have the correct dimension
         self._unit_length = helpers.convert_to_unit(unit_length, "L", "unit_length")
@@ -109,6 +115,30 @@ class EnsembleGenerator:
         number of all atoms in the system. Each element of the array is then a list of indices.
         """
         return self._connectivity_matrix
+
+    @property
+    def temperature(self) -> duq.Quantity:
+        """
+        Temperature of the system.
+
+        Returns
+        -------
+        temperature : duq.Quantity
+            Temperature as a `duq.Quantity` object.
+        """
+        return self._temperature
+
+    @property
+    def pressure(self) -> duq.Quantity:
+        """
+        Pressure of the system.
+
+        Returns
+        -------
+        pressure : duq.Quantity
+            Pressure as a `duq.Quantity` object.
+        """
+        return self._pressure
 
     @property
     def unit_positions(self) -> duq.Unit:
