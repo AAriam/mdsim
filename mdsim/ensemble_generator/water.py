@@ -150,31 +150,6 @@ class Water(EnsembleGenerator):
         return self._density
 
     @property
-    def box_coordinates(self) -> np.ndarray:
-        """
-        Coordinates of the two opposite edges of the simulation box.
-
-        Returns
-        -------
-        box_coordinates : numpy.ndarray
-            2D-array of shape (2, m), where 'm' is either 2 or 3, depending on whether the ensemble
-            is in 2D or 3D. The first element of the array corresponds to the minimum edge of the
-            box, whereas the second element corresponds to the maximum edge.
-        """
-        return self._box_coordinates
-
-    @property
-    def number_molecules_total(self) -> int:
-        """
-        Total number of molecules in the system.
-
-        Returns
-        -------
-        num_molecules_total : int
-        """
-        return self._num_molecules_total
-
-    @property
     def volume_per_molecule(self):
         return self._volume_per_molecule
 

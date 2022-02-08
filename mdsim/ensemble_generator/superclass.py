@@ -71,6 +71,11 @@ class EnsembleGenerator:
         self._atomic_numbers = None
         self._molecule_ids = None
         self._connectivity_matrix = None
+        self._box_coordinates = None
+        self._box_lengths = None
+        self._num_molecules_total = None
+        self._num_atoms_total = None
+        self._is_2d = None
         # Calculate positions and velocities (should be implemented by subclasses)
         self._positions = None
         self._velocities = None
@@ -91,6 +96,33 @@ class EnsembleGenerator:
         the number of all atoms, and 'm' is the number of spatial coordinates.
         """
         return self._velocities
+
+    @property
+    def box_coordinates(self) -> np.ndarray:
+        """
+        Coordinates of the two opposite edges of the simulation box.
+
+        Returns
+        -------
+        box_coordinates : numpy.ndarray
+            2D-array of shape (2, m), where 'm' is either 2 or 3, depending on whether the ensemble
+            is in 2D or 3D. The first element of the array corresponds to the minimum edge of the
+            box, whereas the second element corresponds to the maximum edge.
+        """
+        return self._box_coordinates
+
+    @property
+    def box_lengths(self) -> np.ndarray:
+        """
+        Lengths of the simulation box.
+
+        Returns
+        -------
+        box_lengths : numpy.ndarray
+            1D-array of shape (m, ), where 'm' is either 2 or 3, depending on whether the ensemble
+            is in 2D or 3D. The lengths are listed in the order x, y, z.
+        """
+        return self._box_lengths
 
     @property
     def atomic_numbers(self) -> np.ndarray:
