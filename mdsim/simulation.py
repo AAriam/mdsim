@@ -69,6 +69,7 @@ class MDSimulation:
     @property
     def energy_potential_bond_vibration(self):
         return self._raise_for_none(self._energy_potential_bond_vibration)
+__all__ = ["MDSimulation"]
 
     @property
     def energy_potential_angle_vibration(self):
