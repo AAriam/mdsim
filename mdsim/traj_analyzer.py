@@ -17,27 +17,6 @@ mpl.rcParams["figure.dpi"] = 200
 
 
 class TrajectoryAnalyzer:
-    @classmethod
-    def from_mdsim_object(cls, mdsim):
-        return cls(
-            mdsim.positions,
-            mdsim.velocities,
-            mdsim.timestamps,
-            mdsim.atomic_numbers,
-            mdsim.molecule_ids,
-            mdsim.bonded_atoms_indices,
-            mdsim.masses,
-            mdsim.energy_potential_coulomb,
-            mdsim.energy_potential_lennard_jones,
-            mdsim.energy_potential_bond_vibration,
-            mdsim.energy_potential_angle_vibration,
-            mdsim.distances_interatomic,
-            mdsim.bond_angles,
-            duq.Unit("Da"),
-            mdsim._init_unit_length,
-            mdsim._init_unit_time,
-        )
-
     def __init__(
         self,
         positions: np.ndarray,
