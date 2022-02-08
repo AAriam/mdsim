@@ -244,6 +244,11 @@ class EnsembleGenerator:
     def unit_positions(self) -> duq.Unit:
         """
         Unit of the positions of atoms.
+
+        Returns
+        -------
+        unit_positions : duq.Unit
+            Unit as a `duq.Unit` object.
         """
         return self._unit_length
 
@@ -263,6 +268,11 @@ class EnsembleGenerator:
     def unit_velocities(self) -> duq.Unit:
         """
         Unit of the velocities of atoms.
+
+        Returns
+        -------
+        unit_velocities : duq.Unit
+            Unit as a `duq.Unit` object.
         """
         return self._unit_velocity
 

@@ -121,8 +121,7 @@ class Water(EnsembleGenerator):
         self._mass_molar_h2o = duq.Quantity(
             2 * self._mass_h.value + self._mass_o.value, "g.mol^-1"
         )
-        # Initialize attributes needed to calculate positions
-
+        # Create ensemble
         self._atomic_numbers = self._calculate_atomic_numbers()
         self._molecule_ids = self._calculate_molecule_ids()
         self._connectivity_matrix = self._calculate_connectivity_matrix()
