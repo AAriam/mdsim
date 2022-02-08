@@ -1,5 +1,5 @@
 """
-Main module for running an MD simulation.
+Module containing the class MDSimulation for running an MD simulation.
 """
 
 # Standard library
@@ -107,7 +107,25 @@ class MDSimulation:
         dt: float = 1,
         pbc: bool = False,
     ):
+        """
+        Run the MD-simulation on the ensemble for a given number of steps and step-size.
 
+        Parameters
+        ----------
+        num_steps : int
+            Number of integration steps.
+        dt : float
+            Step-size in the time-unit of ensemble.
+        pbc : bool
+            Whether to run the simulation according to periodic boundary conditions.
+
+        Returns
+        -------
+            None
+            All the simulation data are stored in a TrajectoryAnalyzer object accessible at
+            `self.trajectory`.
+        """
+        # Create arrays for storing force-field calculations
         self._energy_potential_coulomb = np.zeros(num_steps + 1)
         self._energy_potential_lennard_jones = np.zeros(num_steps + 1)
         self._energy_potential_bond_vibration = np.zeros(num_steps + 1)
@@ -149,6 +167,7 @@ class MDSimulation:
         # Update force-field
         self._forcefield(q)
 
+        # Extract calculated data from force-field
         self._energy_potential_coulomb[self._curr_step] = self._forcefield.energy_coulomb
         self._energy_potential_lennard_jones[
             self._curr_step
@@ -162,5 +181,7 @@ class MDSimulation:
         self._bond_angles[self._curr_step, ...] = self._forcefield.bond_angles
         self._distances_interatomic[self._curr_step, ...] = self._forcefield.distances
 
+        # Increment the current step
         self._curr_step += 1
+        # Return acceleration
         return self._forcefield.acceleration
