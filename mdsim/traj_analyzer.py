@@ -227,17 +227,51 @@ class TrajectoryAnalyzer:
     def convert_unit_energy(self, unit):
         # TODO
         pass
+    def save_all_data_to_file(self, filepath):
+        path = Path(filepath)
+        with open(path.with_suffix("npz"), "wb+") as f:
+            np.savez(
+                f,
+                positions=self.positions,
+                velocity=self.velocities,
+                distances=self.distances_interatomic,
+                angles_bond=self.bond_angles,
+                energy_potential_coulomb=self.energy_potential_coulomb,
+                energy_potential_lennard_jones=self.energy_potential_lennard_jones,
+                energy_potential_bond_vibration=self.energy_potential_bond_vibration,
+                energy_potential_angle_vibration=self.energy_potential_angle_vibration,
+            )
+        return
 
     def convert_unit_temperature(self, unit):
         # TODO
         pass
+    def save_trajectory_to_file(self, filepath):
+        path = Path(filepath)
+        with open(path.with_suffix("npz"), "wb+") as f:
+            np.savez(f, positions=self.positions, velocity=self.velocities)
+        return
 
     def convert_unit_velocity(self, unit):
         # TODO
         pass
+    def save_secondary_data_to_file(self, filepath):
+        path = Path(filepath)
+        with open(path.with_suffix("npz"), "wb+") as f:
+            np.savez(
+                f,
+                distances=self.distances_interatomic,
+                angles_bond=self.bond_angles,
+                energy_potential_coulomb=self.energy_potential_coulomb,
+                energy_potential_lennard_jones=self.energy_potential_lennard_jones,
+                energy_potential_bond_vibration=self.energy_potential_bond_vibration,
+                energy_potential_angle_vibration=self.energy_potential_angle_vibration,
+            )
+        return
 
     def convert_unit_time(self, unit):
         # TODO
+    def save_metadata_to_file(self, filepath):
         pass
 
     def _calculate_energy_total(self):
