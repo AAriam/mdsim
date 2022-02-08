@@ -46,58 +46,17 @@ class MDSimulation:
 
         self._curr_step = 0
 
-    @property
-    def positions(self):
-        return self._raise_for_none(self._positions)
-
-    @property
-    def velocities(self):
-        return self._raise_for_none(self._velocities)
-
-    @property
-    def timestamps(self):
-        return self._raise_for_none(self._timestamps)
-
-    @property
-    def energy_potential_coulomb(self):
-        return self._raise_for_none(self._energy_potential_coulomb)
-
-    @property
-    def energy_potential_lennard_jones(self):
-        return self._raise_for_none(self._energy_potential_lennard_jones)
-
-    @property
-    def energy_potential_bond_vibration(self):
-        return self._raise_for_none(self._energy_potential_bond_vibration)
 __all__ = ["MDSimulation"]
 
-    @property
-    def energy_potential_angle_vibration(self):
-        return self._raise_for_none(self._energy_potential_angle_vibration)
+
 
     @property
-    def bond_angles(self):
-        return self._raise_for_none(self._bond_angles)
 
     @property
-    def distances_interatomic(self):
-        return self._raise_for_none(self._distances_interatomic)
 
-    @property
-    def atomic_numbers(self):
-        return self._raise_for_none(self._atomic_numbers, "data")
-
-    @property
-    def molecule_ids(self):
-        return self._raise_for_none(self._molecule_ids, "data")
-
-    @property
-    def bonded_atoms_indices(self):
         return self._raise_for_none(self._connectivity_matrix, "data")
 
     @property
-    def masses(self):
-        return self._raise_for_none(self._masses, "data")
 
     @staticmethod
     def _raise_for_none(attr, sim_or_data="sim"):
