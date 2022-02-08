@@ -98,12 +98,7 @@ class MDSimulation:
         """
         return self._forcefield
 
-    def run(
-        self,
-        num_steps: int = 1000,
-        dt: float = 1,
-        pbc: bool = False,
-    ):
+    def run(self, num_steps: int = 1000, dt: float = 1, pbc: bool = False):
         """
         Run the MD-simulation on the ensemble for a given number of steps and step-size.
 
@@ -127,19 +122,52 @@ class MDSimulation:
         self._energy_potential_lennard_jones = np.zeros(num_steps + 1)
         self._energy_potential_bond_vibration = np.zeros(num_steps + 1)
         self._energy_potential_angle_vibration = np.zeros(num_steps + 1)
-        self._bond_angles = np.zeros((num_steps + 1, self._num_molecules))
-        self._distances_interatomic = np.zeros((num_steps + 1, self._num_atoms, self._num_atoms))
-
+        self._bond_angles = np.zeros((num_steps + 1, self.ensemble.number_molecules_total))
+        self._distances_interatomic = np.zeros(
+            (num_steps + 1, self.ensemble.number_atoms_total, self.ensemble.number_atoms_total)
+        )
+        # Initialize force-field
+        self._forcefield.initialize_forcefield(
+            shape_data=self.ensemble.positions.shape,
+            pbc_cell_lengths=self.ensemble.box_lengths if pbc else None,
+        )
+        # Fit forcefield to units of ensemble
+        self._forcefield.fit_units_to_input_data(
+            self.ensemble.unit_positions,
+            self.ensemble.unit_time,
+        )
+        # Sett current step to 0
+        self._curr_step = 0
         # Run integration
         self._positions, self._velocities, self._timestamps = ode.integrate(
             integrator=ode.Integrators.ODE_2_EXPLICIT_VELOCITY_VERLET,
             f=self._force,
-            x0=self._init_positions,
-            v0=self._init_velocities,
+            x0=self.ensemble.positions,
+            v0=self.ensemble.velocities,
             dt=dt,
             n_steps=num_steps,
         )
-        pass
+        # Create TrajectoryAnalyzer object from results
+        self._trajectory = TrajectoryAnalyzer(
+            positions=self._positions,
+            velocities=self._velocities,
+            timestamps=self._timestamps,
+            atomic_numbers=self.ensemble.atomic_numbers,
+            molecule_ids=self.ensemble.molecule_ids,
+            connectivity_matrix=self.ensemble.connectivity_matrix,
+            energy_potential_coulomb=self._energy_potential_coulomb,
+            energy_potential_lennard_jones=self._energy_potential_lennard_jones,
+            energy_potential_bond_vibration=self._energy_potential_bond_vibration,
+            energy_potential_angle_vibration=self._energy_potential_angle_vibration,
+            distances_interatomic=self._distances_interatomic,
+            bond_angles=self._bond_angles,
+            unit_length=self.ensemble.unit_positions,
+            unit_time=self.ensemble.unit_time,
+            unit_velocity=self.ensemble.unit_velocities,
+            unit_energy=self.forcefield.unit_energy,
+            unit_angle=self.forcefield.unit_angle
+        )
+        return
 
     def _force(self, q: np.ndarray, t=None):
         """
