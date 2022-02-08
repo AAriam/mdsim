@@ -353,6 +353,9 @@ class Water(EnsembleGenerator):
         box_coordinates = np.array([-box_half_lengths, box_half_lengths])
         return box_coordinates
 
+    def _calculate_box_lengths(self) -> np.ndarray:
+        return self.box_coordinates[1] - self.box_coordinates[0]
+
     def _calculate_molecule_box_length(self):
         return self.volume_per_molecule ** (1 / 3)
 
