@@ -3,6 +3,7 @@ Module containing the superclass for all ensemble-generator classes.
 """
 
 # Standard library
+from __future__ import annotations
 from typing import Union
 from pathlib import Path
 
@@ -113,13 +114,11 @@ class EnsembleGenerator:
         self._unit_time = helpers.convert_to_unit(unit_time, "T", "unit_time")
         # Derive the unit of velocity
         self._unit_velocity = self._unit_length / self._unit_time
-
         # Set up the random number generator
         if random_seed is not None:
             helpers.raise_num_for_value_and_type(random_seed, "random_seed")
         self._random_seed = random_seed
         self._random_gen = np.random.RandomState(self._random_seed)
-
         # Calculate metadata (should be implemented by subclasses)
         self._atomic_numbers = None
         self._molecule_ids = None
@@ -133,6 +132,7 @@ class EnsembleGenerator:
         self._positions = None
         self._velocities = None
         self._log = None
+        return
 
     @property
     def positions(self) -> np.ndarray:
@@ -323,8 +323,6 @@ class EnsembleGenerator:
 
     @property
     def log(self):
-        if self._log is None:
-            self._create_log()
         return self._log
 
     def save_to_file(self, filepath: Union[str, Path]) -> Path:
