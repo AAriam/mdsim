@@ -85,28 +85,36 @@ class TrajectoryAnalyzer:
         unit_time
         """
 
-        self.positions = positions
-        self.velocities = velocities
-        self.timestamps = timestamps
-        self.atomic_numbers = atomic_numbers
-        self.molecule_ids = molecule_ids
-        self.connectivity_matrix = connectivity_matrix
-        self.masses = masses
-        self.energy_potential_coulomb = energy_potential_coulomb
-        self.energy_potential_lennard_jones = energy_potential_lennard_jones
-        self.energy_potential_bond_vibration = energy_potential_bond_vibration
-        self.energy_potential_angle_vibration = energy_potential_angle_vibration
-        self.distances_interatomic = distances_interatomic
-        self.angles_bonds = angles_bonds
+        self._positions = positions
+        self._velocities = velocities
+        self._timestamps = timestamps
+        self._atomic_numbers = atomic_numbers
+        self._molecule_ids = molecule_ids
+        self._connectivity_matrix = connectivity_matrix
+        self._energy_potential_coulomb = energy_potential_coulomb
+        self._energy_potential_lennard_jones = energy_potential_lennard_jones
+        self._energy_potential_bond_vibration = energy_potential_bond_vibration
+        self._energy_potential_angle_vibration = energy_potential_angle_vibration
+        self._distances_interatomic = distances_interatomic
+        self._bond_angles = bond_angles
 
-        self._unit_mass = unit_mass
-        self._unit_length = unit_length
-        self._unit_time = unit_time
+        self._masses = np.array(
+            list(
+                map(
+                    lambda z: data[z]["mass_Da"],
+                    self.atomic_numbers,
+                )
+            )
+        )
+        self._unit_mass = duq.Unit("Da")
 
-        self._unit_velocity = None
-        self._unit_momentum = None
-        self._unit_energy = None
+        self._unit_length = helpers.convert_to_unit(unit_length, "L", "unit_length")
+        self._unit_time = helpers.convert_to_unit(unit_time, "T", "unit_time")
+        self._unit_velocity = helpers.convert_to_unit(unit_velocity, "L.T^-1", "unit_velocity")
+        self._unit_energy = helpers.convert_to_unit(unit_energy, "E", "unit_energy")
+        self._unit_angle = helpers.convert_to_unit(unit_angle, "dimensionless", "unit_angle")
 
+        self._unit_momentum = self.unit_mass * self.unit_velocity
         self._unit_temperature = duq.Unit("K")
 
         self._speeds = None
@@ -116,6 +124,8 @@ class TrajectoryAnalyzer:
         self._energy_kinetic_total = None
         self._energy_potential_total = None
         self._energy_total = None
+        self._bond_lengths = None
+        return
 
     @property
     def unit_mass(self):
