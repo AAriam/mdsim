@@ -317,7 +317,7 @@ class TrajectoryAnalyzer:
         return
 
     def _calculate_temperature(self):
-        unit_boltzmann_const = self.unit_energy / duq.Unit("K")
+        unit_boltzmann_const = self.unit_energy / self.unit_temperature
         boltzmann_const = duq.predefined_constants.boltzmann_const.convert_unit(
             unit_boltzmann_const
         )
@@ -374,7 +374,7 @@ class TrajectoryAnalyzer:
         return
 
     def plot_distances_bonded_atoms(self, figure_dpi=200):
-        self._select_distances_bonded_atoms()
+        self._extract_bond_lengths()
         self.change_plots_dpi(figure_dpi)
         plt.plot(self.timestamps, self.distances_bonded_atoms, lw=0.4)
         plt.ylabel(f"Bond distance [{self.unit_length.symbol_as_is}]")
