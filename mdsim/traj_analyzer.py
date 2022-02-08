@@ -1,5 +1,6 @@
 """
-Module containing class TrajectoryAnalyzer used for calculating and plotting properties from trajectory data.
+Module containing class TrajectoryAnalyzer used for calculating and plotting properties from
+trajectory data.
 """
 
 # 3rd-party packages
@@ -69,20 +70,21 @@ class TrajectoryAnalyzer:
             all atoms in the same order as they apper in each frame of position and velocity data.
         molecule_ids : numpy.ndarray
             1D array of length `n` (n = number of atoms) containing the molecule-IDs of all atoms.
-            They can have arbitrary values, but should have the same value for all atoms in the same molecule.
+            They can have arbitrary values, but should have the same value for all atoms in the
+            same molecule.
         connectivity_matrix : numpy.ndarray
             Connectivity of each atom to other atoms, as a boolean upper-triangular matrix of shape
             (n, n), where 'n' is the total number of atoms.
-        masses
         energy_potential_coulomb
         energy_potential_lennard_jones
         energy_potential_bond_vibration
         energy_potential_angle_vibration
         distances_interatomic
-        angles_bonds
-        unit_mass
-        unit_length
-        unit_time
+        bond_angles
+        unit_length : Union[str, duq.Unit]
+            Length-unit of the data.
+        unit_time : Union[str, duq.Unit]
+            Time-unit of the data.
         """
 
         self._positions = positions
