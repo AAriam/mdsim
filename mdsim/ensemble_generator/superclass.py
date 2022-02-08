@@ -149,6 +149,39 @@ class EnsembleGenerator:
         return self._connectivity_matrix
 
     @property
+    def number_molecules_total(self) -> int:
+        """
+        Total number of molecules in the system.
+
+        Returns
+        -------
+        num_molecules_total : int
+        """
+        return self._num_molecules_total
+
+    @property
+    def number_atoms_total(self) -> int:
+        """
+        Total number of atoms in the system.
+
+        Returns
+        -------
+        num_atoms_total : int
+        """
+        return self._num_atoms_total
+
+    @property
+    def number_spatial_dimensions(self) -> int:
+        """
+        Number of spatial dimensions for the data; i.e. 2 if the ensemble is 2D, and 3 if it's 3D.
+
+        Returns
+        -------
+        number_spatial_dimensions : int
+        """
+        return 2 if self._is_2d else 3
+
+    @property
     def temperature(self) -> duq.Quantity:
         """
         Temperature of the system.
@@ -178,6 +211,18 @@ class EnsembleGenerator:
         Unit of the positions of atoms.
         """
         return self._unit_length
+
+    @property
+    def unit_time(self) -> duq.Unit:
+        """
+        Unit of time used in velocities.
+
+        Returns
+        -------
+        unit_positions : duq.Unit
+            Unit as a `duq.Unit` object.
+        """
+        return self._unit_time
 
     @property
     def unit_velocities(self) -> duq.Unit:
