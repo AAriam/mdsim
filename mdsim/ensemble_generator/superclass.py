@@ -1,5 +1,5 @@
 """
-Module containing the superclass for all ensemble generator classes.
+Module containing the superclass for all ensemble-generator classes.
 """
 
 # Standard library
@@ -19,10 +19,10 @@ __all__ = ["EnsembleGenerator"]
 
 class EnsembleGenerator:
     """
-    Superclass for all initial value generator classes. The parameters `unit_length` and
-    `unit_time` are the absolute minimum needed to instantiate the class; depending on the specific
-    initial-value generator, other parameters should be required in order to create the desired
-    initial values.
+    Superclass for all ensemble-generator classes. The parameters, attributes and methods of this
+    class are the absolute minimum shared between all ensemble-generator subclasses. Depending on
+    the specific generator, other parameters, attributes and methods should be implemented in order
+    to create the desired ensemble.
     """
 
     def __init__(
@@ -38,6 +38,14 @@ class EnsembleGenerator:
 
         Parameters
         ----------
+        temperature : Union[str, duq.Quantity]
+            Desired temperature of the system, either as a string representing the value and the
+            unit (e.g. "310 K"), or as an equivalent `duq.Quantity` object. The temperature is used
+            to assign initial velocities to the atoms.
+        pressure : Union[str, duq.Quantity]
+            Desired pressure of the system, either as a string representing the value and the
+            unit (e.g. "1 atm"), or as an equivalent `duq.Quantity` object. The pressure, along
+             with the temperature, is used to calculate the density of the system.
         unit_length : Union[str, duq.Unit]
             Unit of length used for generating the initial positions and velocities, either as a
             string representing the unit (e.g. "Å"), or as an equivalent `duq.Unit` object.
@@ -84,16 +92,26 @@ class EnsembleGenerator:
     @property
     def positions(self) -> np.ndarray:
         """
-        Coordinates of all atoms in the system, as a 2D-array of shape (n, m), where 'n' is
-        the number of all atoms, and 'm' is the number of spatial coordinates.
+        Coordinate vector of each atom in the system.
+
+        Returns
+        -------
+        positions : numpy.ndarray
+            2D-array of shape (n, m), where 'n' is the total number of atoms in the system, and 'm'
+            is the number of spatial coordinates (i.e. either 2 or 3).
         """
         return self._positions
 
     @property
     def velocities(self) -> np.ndarray:
         """
-        Velocities of all atoms in the system, as a 2D-array of shape (n, m), where 'n' is
-        the number of all atoms, and 'm' is the number of spatial coordinates.
+        Velocity vector of each atom in the system.
+
+        Returns
+        -------
+        velocities : numpy.ndarray
+            2D-array of shape (n, m), where 'n' is the total number of atoms in the system, and 'm'
+            is the number of spatial coordinates (i.e. either 2 or 3).
         """
         return self._velocities
 
@@ -127,24 +145,41 @@ class EnsembleGenerator:
     @property
     def atomic_numbers(self) -> np.ndarray:
         """
-        Atomic numbers of all atoms in the system, as a 1D-array of shape (n, ), where 'n' is
-        the number of all atoms.
+        Atomic number of each atom in the system.
+
+        Returns
+        -------
+        atomic_numbers : numpy.ndarray
+            1D-array of shape (n, ), where 'n' is the total number of atoms in the system.
         """
         return self._atomic_numbers
 
     @property
     def molecule_ids(self) -> np.ndarray:
         """
-        Molecule-IDs of all atoms in the system, as a 1D-array of shape (n, ), where 'n' is
-        the number of all atoms.
+        Molecule-ID of each atom in the system, specifying to which molecule it belongs.
+
+        Returns
+        -------
+        molecule_ids : numpy.ndarray
+            1D-array of shape (n, ), where 'n' is the total number of atoms in the system.
         """
         return self._molecule_ids
 
     @property
     def connectivity_matrix(self) -> np.ndarray:
         """
-        Indices of all bonded atoms to each atom, as a 1D-array of shape (n, ), where 'n' is the
-        number of all atoms in the system. Each element of the array is then a list of indices.
+        Connectivity matrix of the atoms in the system, specifying the connectivity of each atom to
+        other atoms.
+
+        Returns
+        -------
+        connectivity_matrix : numpy.ndarray
+            Matrix of shape (n, n), where 'n' is the number of atoms in the system. Each matrix
+            element 'c_ij' is a boolean specifying whether the atom at index 'i' is connected to
+            the atom at index 'j'. For each pair of atoms, this data is only set at the matrix
+            element 'c_ij' where 'i' is smaller than 'j' (i.e. only the upper triangle of the
+            matrix contains the data).
         """
         return self._connectivity_matrix
 
