@@ -93,7 +93,27 @@ __all__ = ["MDSimulation"]
         )
         pass
 
-    def _force(self, q, t):
+    def _force(self, q: np.ndarray, t=None):
+        """
+        Force-function to pass to the integrator; since the integrator expects a function with two
+        arguments, another dummy argument `t` is added. In each integration step, this function
+        takes the positions and passes them to the force-field; it then extracts the calculated
+        data by the force-field and stores them in instance attributes, and returns the calculated
+        acceleration back to the integrator.
+
+        Parameters
+        ----------
+        q : numpy.ndarray
+            Positions of all atoms in the current step.
+        t : None
+            Dummy argument, since the integrator expects a function with two arguments.
+
+        Returns
+        -------
+        acceleration : numpy.ndarray
+            Acceleration vector for each atom in the current step.
+        """
+        # Update force-field
         self._forcefield(q)
 
         self._energy_potential_coulomb[self._curr_step] = self._forcefield.energy_coulomb
