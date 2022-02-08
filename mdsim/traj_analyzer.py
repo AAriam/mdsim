@@ -115,116 +115,194 @@ class TrajectoryAnalyzer:
         return
 
     @property
+    def positions(self):
+        return self._positions
+
+    @property
+    def velocities(self):
+        return self._velocities
+
+    @property
+    def timestamps(self):
+        return self._timestamps
+
+    @property
+    def atomic_numbers(self):
+        return self._atomic_numbers
+
+    @property
+    def molecule_ids(self):
+        return self._molecule_ids
+
+    @property
+    def connectivity_matrix(self):
+        return self._connectivity_matrix
+
+    @property
+    def masses(self):
+        return self._masses
+
+    @property
+    def energy_potential_coulomb(self):
+        return self._energy_potential_coulomb
+
+    @property
+    def energy_potential_lennard_jones(self):
+        return self._energy_potential_lennard_jones
+
+    @property
+    def energy_potential_bond_vibration(self):
+        return self._energy_potential_bond_vibration
+
+    @property
+    def energy_potential_angle_vibration(self):
+        return self._energy_potential_angle_vibration
+
+    @property
+    def distances_interatomic(self):
+        return self._distances_interatomic
+
+    @property
+    def bond_angles(self):
+        return self._bond_angles
+
+    @property
     def unit_mass(self):
-        if isinstance(self._unit_mass, str):
-            self._unit_mass = duq.Unit(self._unit_mass)
-        else:
-            pass
         return self._unit_mass
+
+    @unit_mass.setter
+    def unit_mass(self, new_unit_mass):
+        conv_shift, conv_factor, self._unit_mass = self.unit_mass.convert_to(new_unit_mass)
+        self._masses *= conv_factor
+        return
 
     @property
     def unit_length(self):
-        if isinstance(self._unit_length, str):
-            self._unit_length = duq.Unit(self._unit_length)
-        else:
-            pass
         return self._unit_length
+
+    @unit_length.setter
+    def unit_length(self, new_unit_length):
+        conv_shift, conv_factor, self._unit_length = self._unit_length.convert_to(new_unit_length)
+        self._positions *= conv_factor
+        return
 
     @property
     def unit_time(self):
-        if isinstance(self._unit_time, str):
-            self._unit_time = duq.Unit(self._unit_time)
-        else:
-            pass
         return self._unit_time
+
+    @unit_time.setter
+    def unit_time(self, new_unit_time):
+        conv_shift, conv_factor, self._unit_time = self._unit_time.convert_to(new_unit_time)
+        self._timestamps *= conv_factor
+        return
 
     @property
     def unit_velocity(self):
-        if self._unit_velocity is None:
-            self._unit_velocity = self.unit_length / self.unit_time
-        else:
-            pass
         return self._unit_velocity
+
+    @unit_velocity.setter
+    def unit_velocity(self, new_unit_velocity):
+        conv_shift, conv_factor, self._unit_velocity = self._unit_velocity.convert_to(
+            new_unit_velocity
+        )
+        self._velocities *= conv_factor
+        if self._speeds is not None:
+            self._speeds *= conv_factor
+        return
 
     @property
     def unit_momentum(self):
-        if self._unit_momentum is None:
-            self._unit_momentum = self.unit_mass * self.unit_velocity
-        else:
-            pass
         return self._unit_momentum
+
+    @unit_momentum.setter
+    def unit_momentum(self, new_unit_momentum):
+        conv_shift, conv_factor, self._unit_momentum = self._unit_momentum.convert_to(
+            new_unit_momentum
+        )
+        self._momenta *= conv_factor
+        return
 
     @property
     def unit_energy(self):
-        if self._unit_energy is None:
-            self._unit_energy = self.unit_mass * self.unit_length ** 2 / self.unit_time ** 2
-        else:
-            pass
         return self._unit_energy
+
+    @unit_energy.setter
+    def unit_energy(self, new_unit_energy):
+        conv_shift, conv_factor, self._unit_energy = self._unit_energy.convert_to(new_unit_energy)
+        self._energy_potential_coulomb *= conv_factor
+        self._energy_potential_lennard_jones *= conv_factor
+        self._energy_potential_bond_vibration *= conv_factor
+        self._energy_potential_angle_vibration *= conv_factor
+        if self._energy_potential_total is not None:
+            self._energy_potential_total *= conv_factor
+        if self._energy_kinetic_total is not None:
+            self._energy_kinetic_total *= conv_factor
+        if self._energy_total is not None:
+            self._energy_total *= conv_factor
+        if self._energy_kinetic_per_atom is not None:
+            self._energy_kinetic_per_atom *= conv_factor
+        return
 
     @property
     def unit_temperature(self):
         return self._unit_temperature
 
+    @unit_temperature.setter
+    def unit_temperature(self, new_unit_temperature):
+        conv_shift, conv_factor, self._unit_temperature = self._unit_temperature.convert_to(
+            new_unit_temperature
+        )
+        self._temperature += conv_shift
+        return
+
     @property
     def energy_total(self):
         if self._energy_total is None:
             self._calculate_energy_total()
-        else:
-            pass
         return self._energy_total
 
     @property
     def energy_potential_total(self):
         if self._energy_potential_total is None:
             self._calculate_energy_potential_total()
-        else:
-            pass
         return self._energy_potential_total
 
     @property
     def energy_kinetic_total(self):
         if self._energy_kinetic_total is None:
             self._calculate_energy_kinetic_total()
-        else:
-            pass
         return self._energy_kinetic_total
 
     @property
     def temperature(self):
         if self._temperature is None:
             self._calculate_temperature()
-        else:
-            pass
         return self._temperature
 
     @property
     def energy_kinetic_per_atom(self):
         if self._energy_kinetic_per_atom is None:
             self._calculate_energy_kinetic_per_atom()
-        else:
-            pass
         return self._energy_kinetic_per_atom
 
     @property
     def momenta(self):
         if self._momenta is None:
             self._calculate_momenta()
-        else:
-            pass
         return self._momenta
 
     @property
     def speeds(self):
         if self._speeds is None:
             self._calculate_speeds()
-        else:
-            pass
         return self._speeds
 
-    def convert_unit_energy(self, unit):
-        # TODO
-        pass
+    @property
+    def bond_lengths(self):
+        if self._bond_lengths is None:
+            self._bond_lengths = self.distances_interatomic[self.connectivity_matrix]
+        return self._bond_lengths
+
     def save_all_data_to_file(self, filepath):
         path = Path(filepath)
         with open(path.with_suffix("npz"), "wb+") as f:
@@ -241,18 +319,12 @@ class TrajectoryAnalyzer:
             )
         return
 
-    def convert_unit_temperature(self, unit):
-        # TODO
-        pass
     def save_trajectory_to_file(self, filepath):
         path = Path(filepath)
         with open(path.with_suffix("npz"), "wb+") as f:
             np.savez(f, positions=self.positions, velocity=self.velocities)
         return
 
-    def convert_unit_velocity(self, unit):
-        # TODO
-        pass
     def save_secondary_data_to_file(self, filepath):
         path = Path(filepath)
         with open(path.with_suffix("npz"), "wb+") as f:
@@ -267,8 +339,6 @@ class TrajectoryAnalyzer:
             )
         return
 
-    def convert_unit_time(self, unit):
-        # TODO
     def save_metadata_to_file(self, filepath):
         pass
 
