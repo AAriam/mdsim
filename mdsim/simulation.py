@@ -95,15 +95,6 @@ class MDSimulation:
         """
         ForceField object containing the force-field used in the simulation.
 
-    @staticmethod
-    def _raise_for_none(attr, sim_or_data="sim"):
-        if attr is None:
-            if sim_or_data == "sim":
-                raise ValueError("The simulation has not yet been run.")
-            else:
-                raise ValueError("The initial values have not yet been loaded.")
-        else:
-            return attr
         Returns
         -------
         forcefield : ForceField
@@ -173,10 +164,3 @@ class MDSimulation:
 
         self._curr_step += 1
         return self._forcefield.acceleration
-
-    def _derive_num_atoms_and_molecules(self):
-        self._num_atoms = self._atomic_numbers.size
-        self._num_molecules = np.unique(self._molecule_ids).size
-        self._num_spatial_dims = self._init_positions.shape[1]
-        return
-
