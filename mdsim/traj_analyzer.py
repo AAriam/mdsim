@@ -3,6 +3,10 @@ Module containing class TrajectoryAnalyzer used for calculating and plotting pro
 trajectory data.
 """
 
+# Standard library
+from typing import Union
+from pathlib import Path
+
 # 3rd-party packages
 import numpy as np
 import matplotlib as mpl
@@ -12,6 +16,8 @@ import duq
 
 # Self
 from .data.elements_data import data
+from . import helpers
+
 
 mpl.rcParams["figure.dpi"] = 200
 
