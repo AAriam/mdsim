@@ -13,42 +13,56 @@ from mdforce.models.forcefield_superclass import ForceField
 
 # Self
 from . import initial_value_generator as init_gen
+from .ensemble_generator.superclass import EnsembleGenerator
 
-
-class MDSimulation:
-    def __init__(
-        self,
-        forcefield: ForceField,
-    ):
-
-        self._forcefield = forcefield
-
-        self._init_positions = None
-        self._init_velocities = None
-        self._init_unit_length = None
-        self._init_unit_time = None
-        self._atomic_numbers = None
-        self._molecule_ids = None
-        self._connectivity_matrix = None
-        self._num_atoms = None
-        self._num_molecules = None
-
-        self._positions = None
-        self._velocities = None
-        self._timestamps = None
-
-        self._energy_potential_coulomb = None
-        self._energy_potential_lennard_jones = None
-        self._energy_potential_bond_vibration = None
-        self._energy_potential_angle_vibration = None
-        self._bond_angles = None
-        self._distances_interatomic = None
-
-        self._curr_step = 0
 
 __all__ = ["MDSimulation"]
 
 
+class MDSimulation:
+    def __init__(self, forcefield: ForceField, ensemble: EnsembleGenerator):
+        """
+        Initialize an MD-simulation on a given initial ensemble using a given force-field.
+
+        Parameters
+        ----------
+        forcefield : mdforce.models.forcefield_superclass.ForceField
+            Force-field to use in the simulation.
+        ensemble : mdsim.ensemble_generator.superclass.EnsembleGenerator
+            Initial ensemble to run the simulation on.
+        """
+        # Verify type of input arguments and assign as instance attributes
+        if not isinstance(forcefield, ForceField) or (
+            not issubclass(forcefield.__class__, ForceField)
+        ):
+            raise ValueError(
+                "Argument `forcefield` should either be an instance or a subclass of "
+                "`mdforce.models.forcefield_superclass.ForceField`."
+            )
+        else:
+            self._forcefield = forcefield
+        if not isinstance(ensemble, EnsembleGenerator) or (
+            not issubclass(ensemble.__class__, EnsembleGenerator)
+        ):
+            raise ValueError(
+                "Argument `ensemble` should either be an instance or a subclass of "
+                "`mdsim.ensemble_generator.superclass.EnsembleGenerator`."
+            )
+        else:
+            self._ensemble = ensemble
+        # Initialize instance attributes for storing the simulation results
+        self._trajectory: TrajectoryAnalyzer = None
+        self._positions: np.ndarray = None
+        self._velocities: np.ndarray = None
+        self._timestamps: np.ndarray = None
+        self._energy_potential_coulomb: np.ndarray = None
+        self._energy_potential_lennard_jones: np.ndarray = None
+        self._energy_potential_bond_vibration: np.ndarray = None
+        self._energy_potential_angle_vibration: np.ndarray = None
+        self._bond_angles: np.ndarray = None
+        self._distances_interatomic: np.ndarray = None
+        self._curr_step: int = None
+        return
 
     @property
 
@@ -131,34 +145,6 @@ __all__ = ["MDSimulation"]
 
         self._curr_step += 1
         return self._forcefield.acceleration
-
-    def load_initial_values_from_generator(self, generator: init_gen.InitialValuesGenerator):
-        if not issubclass(generator.__class__, init_gen.InitialValuesGenerator):
-            raise ValueError(
-                "`generator` should be a subclass of "
-                "mdsim.initial_value_generator.InitialValuesGenerator"
-            )
-        else:
-            self._init_positions = generator.positions
-            self._init_velocities = generator.velocities
-            self._init_unit_length = generator.unit_length
-            self._init_unit_time = generator.unit_time
-            self._atomic_numbers = generator.atomic_numbers
-            self._molecule_ids = generator.molecule_ids
-            self._connectivity_matrix = generator.connectivity_matrix
-
-            self._derive_num_atoms_and_molecules()
-            self._forcefield.initialize_forcefield(self._init_positions.shape)
-            self._forcefield.fit_units_to_input_data(
-                self._init_unit_length,
-                self._init_unit_time,
-            )
-
-            self._masses = np.tile(
-                [generator._mass_o.value, generator._mass_h.value, generator._mass_h.value],
-                self._num_molecules,
-            )
-        return
 
     def _derive_num_atoms_and_molecules(self):
         self._num_atoms = self._atomic_numbers.size
