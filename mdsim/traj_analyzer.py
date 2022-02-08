@@ -497,19 +497,6 @@ class TrajectoryAnalyzer:
             display.clear_output(wait=True)
         return
 
-    def _select_distances_bonded_atoms(self):
-        atom_idx = 0
-        lis = []
-        for bonded_atoms_indices in self.connectivity_matrix[::3]:
-            for bonded_atom_idx in bonded_atoms_indices:
-                lis.append((atom_idx, bonded_atom_idx))
-            atom_idx += 3
-        self.distances_bonded_atoms = np.zeros((self.distances_interatomic.shape[0], len(lis)))
-        for ind, x in enumerate(self.distances_interatomic):
-            for ind2, idx in enumerate(lis):
-                self.distances_bonded_atoms[ind, ind2] = x[idx[0], idx[1]]
-        return
-
     @staticmethod
     def change_plots_dpi(dpi):
         mpl.rcParams["figure.dpi"] = dpi
