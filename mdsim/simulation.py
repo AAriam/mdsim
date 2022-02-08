@@ -191,7 +191,6 @@ class MDSimulation:
         """
         # Update force-field
         self._forcefield(q)
-
         # Extract calculated data from force-field
         self._energy_potential_coulomb[self._curr_step] = self._forcefield.energy_coulomb
         self._energy_potential_lennard_jones[
@@ -205,7 +204,6 @@ class MDSimulation:
         ] = self._forcefield.energy_angle_vibration
         self._bond_angles[self._curr_step, ...] = self._forcefield.bond_angles
         self._distances_interatomic[self._curr_step, ...] = self._forcefield.distances
-
         # Increment the current step
         self._curr_step += 1
         # Return acceleration
