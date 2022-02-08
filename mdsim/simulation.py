@@ -65,12 +65,35 @@ class MDSimulation:
         return
 
     @property
+    def trajectory(self) -> TrajectoryAnalyzer:
+        """
+        TrajectoryAnalyzer object containing all the simulation data, in addition to
+        functionalities for calculating new properties and visualization.
+
+        Returns
+        -------
+        trajectory : TrajectoryAnalyzer
+        """
+        if self._trajectory is None:
+            raise ValueError("The simulation has not yet been run.")
+        else:
+            return self._trajectory
 
     @property
+    def ensemble(self) -> EnsembleGenerator:
+        """
+        EnsembleGenerator object containing the initial values for the simulation.
 
-        return self._raise_for_none(self._connectivity_matrix, "data")
+        Returns
+        -------
+        ensemble: EnsembleGenerator
+        """
+        return self._ensemble
 
     @property
+    def forcefield(self) -> ForceField:
+        """
+        ForceField object containing the force-field used in the simulation.
 
     @staticmethod
     def _raise_for_none(attr, sim_or_data="sim"):
@@ -81,6 +104,11 @@ class MDSimulation:
                 raise ValueError("The initial values have not yet been loaded.")
         else:
             return attr
+        Returns
+        -------
+        forcefield : ForceField
+        """
+        return self._forcefield
 
     def run(
         self,
