@@ -2,18 +2,15 @@
 Module containing the class MDSimulation for running an MD simulation.
 """
 
-# Standard library
-from pathlib import Path
 
 # 3rd-party packages
 import numpy as np
 import numintegrator as ode
-import duq
 from mdforce.models.forcefield_superclass import ForceField
 
 # Self
-from . import initial_value_generator as init_gen
 from .ensemble_generator.superclass import EnsembleGenerator
+from .traj_analyzer import TrajectoryAnalyzer
 
 
 __all__ = ["MDSimulation"]
