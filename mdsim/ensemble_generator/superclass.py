@@ -302,11 +302,15 @@ class EnsembleGenerator:
                 f,
                 positions=self.positions,
                 velocities=self.velocities,
+                box_coordinates=self._box_coordinates,
                 atomic_numbers=self.atomic_numbers,
                 molecule_ids=self.molecule_ids,
                 connectivity_matrix=self.connectivity_matrix,
-                unit_positions=self.unit_positions.exponents_as_is,
-                unit_velocities=self.unit_velocities.exponents_as_is,
+                unit_length=self.unit_positions.exponents_as_is,
+                unit_time=self.unit_time.exponents_as_is,
+                unit_temperature=self.temperature.unit.exponents_as_is,
+                unit_pressure=self.pressure.unit.exponents_as_is,
+                temperature_pressure=np.array([self.temperature.value, self.pressure.value]),
             )
         return fullpath.absolute()
 
