@@ -116,8 +116,8 @@ class Water(EnsembleGenerator):
         self._eq_bond_length = helpers.convert_to_quantity(eq_bond_len, "L", "eq_bond_len")
         self._eq_bond_angle = helpers.convert_to_quantity(eq_bond_angle, "1", "eq_bond_angle")
         # Read masses and calculate molar mass of water
-        self._mass_h = helpers.convert_to_quantity(elements_data[1]["mass"], "M", "mass_hydrogen")
-        self._mass_o = helpers.convert_to_quantity(elements_data[8]["mass"], "M", "mass_oxygen")
+        self._mass_h = duq.Quantity(elements_data[1]["mass_Da"], "Da")
+        self._mass_o = duq.Quantity(elements_data[8]["mass_Da"], "Da")
         self._mass_molar_h2o = duq.Quantity(
             2 * self._mass_h.value + self._mass_o.value, "g.mol^-1"
         )
