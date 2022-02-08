@@ -108,9 +108,9 @@ class Water(EnsembleGenerator):
                     "2D data can only be created when `num_molecules_in_z` is set to 1."
                 )
             else:
-                self._create_2d = False
+                self._is_2d = False
         else:
-            self._create_2d = create_2d
+            self._is_2d = create_2d
         # Convert given quantities to duq.Quantity objects (if they are strings)
         # and verify that they have the correct dimension
         self._eq_bond_length = helpers.convert_to_quantity(eq_bond_len, "L", "eq_bond_len")
@@ -296,7 +296,7 @@ class Water(EnsembleGenerator):
             q_init_rot = helpers.rotate_3d_vector_around_axis(q_init, random_angle[0], "z")
             # If the simulation box is to be in 3D, also rotate the molecule about the x- and
             # y-axes
-            if not self._create_2d:
+            if not self._is_2d:
                 q_init_rot = helpers.rotate_3d_vector(
                     q_init_rot, random_angle[1], random_angle[2], order="xy"
                 )
@@ -318,13 +318,13 @@ class Water(EnsembleGenerator):
         midpoint = (np.max(q, axis=0) + np.min(q, axis=0)) / 2
         q -= midpoint
         # If the simulation box is 2D, remove (all zero) z-coordinates
-        if self._create_2d:
+        if self._is_2d:
             q = q[:, 0:2]
         return q
 
     def _calculate_velocities(self) -> np.ndarray:
         # Derive the shape of data
-        shape = (self._num_atoms_total, 2 if self._create_2d else 3)
+        shape = (self._num_atoms_total, 2 if self._is_2d else 3)
         # Create a random unit vector for each atom
         v = self._random_gen.random_sample(shape) * 2 - 1
         v_norm = v / np.linalg.norm(v, axis=1).reshape(-1, 1)
@@ -345,7 +345,7 @@ class Water(EnsembleGenerator):
         return velocities
 
     def _calculate_box_coordinates(self) -> np.ndarray:
-        if self._create_2d:
+        if self._is_2d:
             num_mols = np.array([self._num_mols_x, self._num_mols_y])
         else:
             num_mols = np.array([self._num_mols_x, self._num_mols_y, self._num_mols_z])
