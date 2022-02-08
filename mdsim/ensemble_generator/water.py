@@ -133,6 +133,7 @@ class Water(EnsembleGenerator):
         self._volume_per_molecule = self._calculate_volume_per_molecule()
         self._molecule_box_length = self._calculate_molecule_box_length()
         self._box_coordinates = self._calculate_box_coordinates()
+        self._box_lengths = self._calculate_box_lengths()
 
         self._positions = self._calculate_positions()
         return
