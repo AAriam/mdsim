@@ -42,6 +42,7 @@ class TrajectoryAnalyzer:
         unit_velocity: Union[str, duq.Unit],
         unit_energy: Union[str, duq.Unit],
         unit_angle: Union[str, duq.Unit],
+        pbc_box_lengths: np.ndarray = None,
     ):
         """
 
@@ -100,6 +101,8 @@ class TrajectoryAnalyzer:
         self._unit_velocity = helpers.convert_to_unit(unit_velocity, "L.T^-1", "unit_velocity")
         self._unit_energy = helpers.convert_to_unit(unit_energy, "E", "unit_energy")
         self._unit_angle = helpers.convert_to_unit(unit_angle, "dimensionless", "unit_angle")
+
+        self._pbc_box_lengths = pbc_box_lengths
 
         self._unit_momentum = self.unit_mass * self.unit_velocity
         self._unit_temperature = duq.Unit("K")
@@ -380,6 +383,15 @@ class TrajectoryAnalyzer:
             (3 / 2) * boltzmann_const.value
         )
         return
+
+    def _calculate_positions_in_main_box(self):
+        if self._pbc_box_lengths is None:
+            raise ValueError("PBC box lengths are not given.")
+        else:
+            pos_in_box = (
+                    self.positions - self._pbc_box_lengths *
+                    np.rint(self.positions / self._pbc_box_lengths)
+            )
 
     def plot_speeds(self, figure_dpi=200):
         self.change_plots_dpi(figure_dpi)
