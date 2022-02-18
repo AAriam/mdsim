@@ -299,25 +299,24 @@ class Water(EnsembleGenerator):
 
     def _calculate_velocities(self) -> np.ndarray:
         # Derive the shape of data
-        shape = (self._num_atoms_total, 2 if self._is_2d else 3)
+        shape = (self._num_molecules_total, 2 if self._is_2d else 3)
         # Create a random unit vector for each atom
         v = self._random_gen.random_sample(shape) * 2 - 1
         v_norm = v / np.linalg.norm(v, axis=1).reshape(-1, 1)
         # Calculate the parameter of the Maxwell distribution function in scipy
         temp = self._temperature.convert_unit("K")
-        a_hydrogen = (duq.predefined_constants.boltzmann_const * temp / self._mass_h) ** (1 / 2)
-        a_oxygen = (duq.predefined_constants.boltzmann_const * temp / self._mass_o) ** (1 / 2)
-        a_hydrogen_value = a_hydrogen.convert_unit(self.unit_velocities).value
-        a_oxygen_value = a_oxygen.convert_unit(self.unit_velocities).value
+        mass_h2o = 2 * self._mass_h + self._mass_o
+        maxwell_scale = (duq.predefined_constants.boltzmann_const * temp / mass_h2o) ** (1 / 2)
+        maxwell_scale_value = maxwell_scale.convert_unit(self.unit_velocities).value
         # Draw speeds from the Maxwell-Boltzmann distribution
         speeds = maxwell.rvs(
-            size=(self._num_molecules_total, 3),
-            scale=(a_oxygen_value, a_hydrogen_value, a_hydrogen_value),
+            size=self._num_molecules_total,
+            scale=maxwell_scale_value,
             random_state=self._random_gen,
         ).reshape(-1, 1)
         # Multiply speeds with unit vectors to get velocity vectors for each atom
         velocities = v_norm * speeds
-        return velocities
+        return np.tile(velocities, 3).reshape(self._num_atoms_total, -1)
 
     def _calculate_box_coordinates(self) -> np.ndarray:
         if self._is_2d:
