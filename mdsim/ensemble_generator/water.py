@@ -246,6 +246,27 @@ class Water(EnsembleGenerator):
         plt.show()
         return
 
+    def plot_speed_distribution(self, figure_dpi=150):
+        mpl.rcParams["figure.dpi"] = figure_dpi
+        mass_h2o = 2 * self._mass_h + self._mass_o
+        maxwell_scale = (duq.predefined_constants.boltzmann_const * self._temperature / mass_h2o) ** (1 / 2)
+        maxwell_scale_value = maxwell_scale.convert_unit(self.unit_velocities).value
+        speeds = np.linalg.norm(self._velocities, axis=1)
+        maxwell_dist_speeds = np.linspace(0, speeds.max()*1.1, 100000)
+        maxwell_dist_probs = (
+                np.sqrt(2 / np.pi) *
+                maxwell_dist_speeds ** 2 *
+                np.exp(-maxwell_dist_speeds ** 2 / (2 * maxwell_scale_value ** 2)) /
+                maxwell_scale_value ** 3
+        )
+        plt.hist(speeds, bins=100, density=True, stacked=True, rwidth=0.8)
+        plt.plot(maxwell_dist_speeds, maxwell_dist_probs, label="Maxwell–Boltzmann PDF")
+        plt.xlabel(f"Speed [{self._unit_velocity.symbol_as_is}]")
+        plt.ylabel(f"Probability Density [{(1/self._unit_velocity).symbol_as_is}]")
+        plt.legend()
+        plt.show()
+        return
+
     def _calculate_positions(self) -> np.ndarray:
         """
         Calculate the coordinates of each atom of each molecule in the water box, as an array
